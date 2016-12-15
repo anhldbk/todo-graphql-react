@@ -31,10 +31,13 @@ Issue the command:
 npm start
 ```
 
-Open the app at http://localhost:3000, you'll see something like this screenshot:
+Open the app at [http://localhost:3000](http://localhost:3000), you'll see something like this screenshot:
 
-![](res/screenshot.png)
+![](res/todo.png)
 
+Wanna play with `Graphiql`? It can be reached at: [http://localhost:3000/graphiql](http://localhost:3000/graphiql)
+
+![](res/graphiql.png)
 ## Directory structure
 - `./api`: contains our API server's code
 - `./ui`: our server-rendering frontend
