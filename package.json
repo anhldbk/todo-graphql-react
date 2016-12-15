@@ -21,6 +21,9 @@
   "bugs": {
     "url": "https://github.com/apollostack/GitHunt/issues"
   },
+  "keywords": [
+    "react", "hapi", "graphql", "subscriptions"
+  ],
   "homepage": "https://github.com/apollostack/GitHunt#readme",
   "devDependencies": {
     "babel-cli": "^6.8.0",
@@ -87,8 +90,7 @@
       "camelcase": 0,
       "react/jsx-filename-extension": 0,
       "react/no-unused-prop-types": [
-        2,
-        {
+        2, {
           "skipShapeProps": true
         }
       ]
