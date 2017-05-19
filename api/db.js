@@ -1,5 +1,5 @@
 class Post {
-	constructor(title, content){
+	constructor(title, content) {
 		this.id = Post._count++;
 		this.title = title;
 		this.content = content;
@@ -8,14 +8,14 @@ class Post {
 
 Post._count = 0
 
-class Database{
-	constructor(){
-		this.posts =[]
+class Database {
+	constructor() {
+		this.posts = []
 	}
-	get(){
+	get() {
 		return this.posts
 	}
-	add(title, content){
+	add(title, content) {
 		var post = new Post(title, content)
 		this.posts.push(post)
 		return post

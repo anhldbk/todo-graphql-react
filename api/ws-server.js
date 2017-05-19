@@ -1,7 +1,27 @@
-'use strict'
-import {subscriptionManager} from './subscriptions';
-import {createServer} from 'http';
-import {SubscriptionServer} from 'subscriptions-transport-ws';
+import {
+    createServer
+} from 'http';
+import {
+    SubscriptionServer
+} from 'subscriptions-transport-ws';
+import {
+    SubscriptionManager
+} from 'graphql-subscriptions';
+import {
+    schema,
+    pubsub
+} from './schema';
+
+const subscriptionManager = new SubscriptionManager({
+    schema,
+    pubsub,
+    setupFunctions: {
+        commentAdded: (options, args) => ({
+            commentAdded: comment => comment.repository_name === args.repoFullName,
+        }),
+    },
+});
+
 
 export default {
     // Start WebSocket server for GraphQL subscriptions

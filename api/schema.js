@@ -1,7 +1,13 @@
-import {makeExecutableSchema} from 'graphql-tools';
-import {pubsub} from './subscriptions';
-import db from './db'
-import _ from 'lodash'
+import {
+  makeExecutableSchema
+} from 'graphql-tools';
+import {
+  PubSub
+} from 'graphql-subscriptions';
+import db from './db';
+import _ from 'lodash';
+
+const pubsub = new PubSub();
 
 const rootSchema = [`
   type Post {
@@ -59,6 +65,12 @@ const rootResolvers = {
 const schema = [...rootSchema];
 const resolvers = _.merge(rootResolvers);
 
-const executableSchema = makeExecutableSchema({typeDefs: schema, resolvers});
+const executableSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers
+});
 
-export default executableSchema;
+module.exports = {
+  schema: executableSchema,
+  pubsub
+}
