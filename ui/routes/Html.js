@@ -1,6 +1,6 @@
 /* eslint-disable react/no-danger */
 
-import React, { PropTypes } from 'react';
+import React, { PropTypes } from "react";
 
 // TODO: production setup?
 const basePort = process.env.PORT || 3000;
@@ -11,7 +11,12 @@ const Html = ({ content, state }) => (
     <head>
       <meta charSet="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossOrigin="anonymous" />
+      <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+        integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+        crossOrigin="anonymous"
+      />
       <title>Todo app</title>
     </head>
     <body>
@@ -22,7 +27,9 @@ const Html = ({ content, state }) => (
         </ul>
       </div>
       <script
-        dangerouslySetInnerHTML={{ __html: `window.__APOLLO_STATE__=${JSON.stringify(state)};` }}
+        dangerouslySetInnerHTML={{
+          __html: `window.__APOLLO_STATE__=${JSON.stringify(state)};`
+        }}
         charSet="UTF-8"
       />
       <script src={scriptUrl} charSet="UTF-8" />
@@ -32,7 +39,7 @@ const Html = ({ content, state }) => (
 
 Html.propTypes = {
   content: PropTypes.string.isRequired,
-  state: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  state: PropTypes.object.isRequired // eslint-disable-line react/forbid-prop-types
 };
 
 export default Html;

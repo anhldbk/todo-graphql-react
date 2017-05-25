@@ -1,15 +1,12 @@
-import {
-  makeExecutableSchema
-} from 'graphql-tools';
-import {
-  PubSub
-} from 'graphql-subscriptions';
-import db from './db';
-import _ from 'lodash';
+import { makeExecutableSchema } from "graphql-tools";
+import { PubSub } from "graphql-subscriptions";
+import db from "./db";
+import _ from "lodash";
 
 const pubsub = new PubSub();
 
-const rootSchema = [`
+const rootSchema = [
+  `
   type Post {
     id: Int!
     title: String!
@@ -31,25 +28,19 @@ const rootSchema = [`
     mutation: Mutation
     subscription: Subscription
   }
-`];
+`
+];
 
 const rootResolvers = {
   Query: {
     posts(root, args, context) {
-      return db.get()
+      return db.get();
     }
   },
   Mutation: {
-    addPost(root, {
-      title,
-      content
-    }, context) {
-      // if (!context.user) {
-      //   throw new Error('Must be logged in to submit a comment.');
-      // }
-      // return a value or a Promise
+    addPost(root, { title, content }, context) {
       var post = db.add(title, content);
-      pubsub.publish('postAdded', post);
+      pubsub.publish("postAdded", post);
       return post;
     }
   },
@@ -73,4 +64,4 @@ const executableSchema = makeExecutableSchema({
 module.exports = {
   schema: executableSchema,
   pubsub
-}
+};

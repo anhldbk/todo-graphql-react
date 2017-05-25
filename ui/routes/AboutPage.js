@@ -1,6 +1,6 @@
-import React from 'react';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import React from "react";
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
 
 class AboutPage extends React.Component {
   constructor(props) {
@@ -9,10 +9,8 @@ class AboutPage extends React.Component {
   }
 
   render() {
-    var person = this.person ||  'me?'
-    return(
-      <h1>About {person}</h1>
-    )
+    var person = this.person || "me?";
+    return <h1>About {person}</h1>;
   }
 }
 

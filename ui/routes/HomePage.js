@@ -1,10 +1,10 @@
-import React from 'react';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import update from 'react-addons-update';
-import NotificationSystem from 'react-notification-system'
-import { autobind } from 'core-decorators';
-import PostList from '../components/PostList';
+import React from "react";
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
+import update from "react-addons-update";
+import NotificationSystem from "react-notification-system";
+import { autobind } from "core-decorators";
+import PostList from "../components/PostList";
 
 const SUBSCRIPTION_QUERY = gql`subscription {
     postAdded{
@@ -41,77 +41,69 @@ class HomePage extends React.Component {
     if (!this.subscription && !nextProps.loading) {
       this.subscription = this.props.subscribeToMore({
         document: SUBSCRIPTION_QUERY,
-        updateQuery: (previousResult, {
-          subscriptionData
-        }) => {
+        updateQuery: (previousResult, { subscriptionData }) => {
           const newPost = subscriptionData.data.postAdded;
           const newResult = update(previousResult, {
             posts: {
               $unshift: [newPost]
             }
           });
-          this._notifyInfo('A new post is found.')
+          this._notifyInfo("A new post is found.");
           return newResult;
-        },
+        }
       });
     }
   }
 
-  @autobind
-  submitForm(event) {
+  @autobind submitForm(event) {
     event.preventDefault();
     const { submit } = this.props;
     const title = this.inputTitle.value;
     const content = this.inputContent.value;
 
-    if(!this.state.canSubmit){
-      this._notifyError('Can NOT submit');
+    if (!this.state.canSubmit) {
+      this._notifyError("Can NOT submit");
     }
 
     this.setState({ canSubmit: false });
-    submit({title,content}).then((res) => {
+    submit({ title, content }).then(res => {
       this.setState({ canSubmit: true });
 
       if (res.errors) {
-        this._notifyError('Failed to post');
+        this._notifyError("Failed to post");
         return this.setState({ errors: res.errors });
       }
 
-      this.inputTitle.value = '';
-      this.inputContent.value = '';
-      this._notifySuccess('Post is created')
+      this.inputTitle.value = "";
+      this.inputContent.value = "";
+      this._notifySuccess("Post is created");
     });
-
   }
 
-  @autobind
-  _addNotification(message, level = 'success') {
+  @autobind _addNotification(message, level = "success") {
     this._notificationSystem.addNotification({
       message,
       level
     });
   }
 
-  @autobind
-  _notifySuccess(message){
-    this._addNotification(message, 'success');
+  @autobind _notifySuccess(message) {
+    this._addNotification(message, "success");
   }
 
-  @autobind
-  _notifyError(message){
-    this._addNotification(message, 'error');
+  @autobind _notifyError(message) {
+    this._addNotification(message, "error");
   }
 
-  @autobind
-  _notifyInfo(message){
-    this._addNotification(message, 'info');
+  @autobind _notifyInfo(message) {
+    this._addNotification(message, "info");
   }
 
   render() {
     const { loading, posts } = this.props;
 
     if (loading) {
-      return (<div>Loading...</div>);
+      return <div>Loading...</div>;
     }
 
     return (
@@ -121,13 +113,21 @@ class HomePage extends React.Component {
           <form onSubmit={this.submitForm}>
             <div className="form-group">
               <label htmlFor="inputTitle">Title</label>
-              <input type="text" className="form-control" id="inputTitle"
-                      ref={input => (this.inputTitle = input)}/>
+              <input
+                type="text"
+                className="form-control"
+                id="inputTitle"
+                ref={input => (this.inputTitle = input)}
+              />
             </div>
             <div className="form-group">
               <label htmlFor="inputContent">Content</label>
-              <textarea className="form-control" rows="4" id="inputContent"
-                      ref={input => (this.inputContent = input)}/>
+              <textarea
+                className="form-control"
+                rows="4"
+                id="inputContent"
+                ref={input => (this.inputContent = input)}
+              />
             </div>
             <button type="submit" className="btn btn-default">Submit</button>
           </form>
@@ -155,13 +155,13 @@ const withMutations = graphql(SUBMIT_POST_MUTATION, {
       mutate({
         variables: { title, content },
         optimisticResponse: {
-          __typename: 'Mutation',
+          __typename: "Mutation",
           addPost: {
-            __typename: 'Post',
+            __typename: "Post",
             id: null,
             title,
             content
-          },
+          }
         },
         updateQueries: {
           Post: (prev, { mutationResult }) => {
@@ -171,13 +171,13 @@ const withMutations = graphql(SUBMIT_POST_MUTATION, {
                 $unshift: [newPost]
               }
             });
-          },
-        },
-      }),
-  }),
+          }
+        }
+      })
+  })
 });
 
-const POST_QUERY = gql `
+const POST_QUERY = gql`
   query {
     posts {
       # TODO: define a fragment here
@@ -190,8 +190,10 @@ const POST_QUERY = gql `
 
 const withData = graphql(POST_QUERY, {
   props: ({ data: { loading, posts, subscribeToMore } }) => ({
-    loading, posts, subscribeToMore,
-  }),
+    loading,
+    posts,
+    subscribeToMore
+  })
 });
 
-export default withData( withMutations(HomePage) );
+export default withData(withMutations(HomePage));

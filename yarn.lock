@@ -6,101 +6,65 @@
   version "2.0.36"
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.36.tgz#d3f393ea7dd413e1003ff49859fff41d8cca8f48"
 
-"@types/body-parser@0.0.33":
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-0.0.33.tgz#33ca1498fc37e51c5df0c81cae34569e7041e025"
-  dependencies:
-    "@types/express" "*"
+"@types/boom@*":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@types/boom/-/boom-4.3.2.tgz#8f40fb142322958ff1bb520c2d8d20cf1dd3d468"
 
-"@types/boom@0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@types/boom/-/boom-0.0.32.tgz#5dfd349b4e7ebe2c73ca8d39ab05687dd403f9a1"
+"@types/catbox@*":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@types/catbox/-/catbox-7.1.0.tgz#adb0962f1cd9ba14d15efc0de91503364845e5f6"
   dependencies:
-    "@types/node" "*"
+    "@types/boom" "*"
 
-"@types/chai@^3.4.32", "@types/chai@^3.4.34":
+"@types/chai@^3.4.32":
   version "3.4.34"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-3.4.34.tgz#d5335792823bb09cddd5e38c3d211b709183854d"
 
-"@types/connect@^3.4.30":
-  version "3.4.30"
-  resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.30.tgz#0a8ede309ce0ebdba2f0534e574692511dd71eb6"
+"@types/graphql@^0.9.0":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.9.1.tgz#b04ebe84bc997cc60dbea2ed4d0d4342c737f99d"
+
+"@types/hapi@^16.0.0":
+  version "16.1.2"
+  resolved "https://registry.yarnpkg.com/@types/hapi/-/hapi-16.1.2.tgz#e782b399a11ef8934c3de3ab07aae9fb53cb0968"
   dependencies:
+    "@types/boom" "*"
+    "@types/catbox" "*"
+    "@types/joi" "*"
+    "@types/mimos" "*"
     "@types/node" "*"
-
-"@types/cookies@*", "@types/cookies@^0.5.30":
-  version "0.5.30"
-  resolved "https://registry.yarnpkg.com/@types/cookies/-/cookies-0.5.30.tgz#de798b61d6c6da77d6559ab1db4c6f3c8b4935bd"
-  dependencies:
-    "@types/node" "*"
-
-"@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.0.36":
-  version "4.0.39"
-  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.39.tgz#45157f96480d46f254648f45b2c6d70bd9fc9f54"
-  dependencies:
-    "@types/node" "*"
-
-"@types/express@*", "@types/express@^4.0.33":
-  version "4.0.34"
-  resolved "https://registry.yarnpkg.com/@types/express/-/express-4.0.34.tgz#cdc0afd69d70d2295b81b3aa47f26f672afcde1c"
-  dependencies:
-    "@types/express-serve-static-core" "*"
-    "@types/serve-static" "*"
-
-"@types/fibers@0.0.29":
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/@types/fibers/-/fibers-0.0.29.tgz#4c815209a717ede505c3040b4e3a31a7f5239d49"
-
-"@types/hapi@^13.0.35":
-  version "13.0.37"
-  resolved "https://registry.yarnpkg.com/@types/hapi/-/hapi-13.0.37.tgz#596c4ec52015daa16d36fd75ddbcfac3a5effc30"
-  dependencies:
-    "@types/node" "*"
-
-"@types/http-errors@^1.3.29":
-  version "1.5.31"
-  resolved "https://registry.yarnpkg.com/@types/http-errors/-/http-errors-1.5.31.tgz#e319409ec35d592397030a8da7864677705a9b0a"
+    "@types/podium" "*"
+    "@types/shot" "*"
 
 "@types/isomorphic-fetch@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/isomorphic-fetch/-/isomorphic-fetch-0.0.30.tgz#a21717624cde9a48c2db53a4e500fc5c32a99bbc"
 
-"@types/koa-bodyparser@^3.0.19":
-  version "3.0.20"
-  resolved "https://registry.yarnpkg.com/@types/koa-bodyparser/-/koa-bodyparser-3.0.20.tgz#5b6b8127b7bb30428020470abe5d370beb680465"
-  dependencies:
-    "@types/koa" "*"
-
-"@types/koa-router@^7.0.21":
-  version "7.0.21"
-  resolved "https://registry.yarnpkg.com/@types/koa-router/-/koa-router-7.0.21.tgz#8d462a631181022472e6a9a690934bbaa9a3e7a5"
-  dependencies:
-    "@types/koa" "*"
-
-"@types/koa@*", "@types/koa@^2.0.33":
-  version "2.0.35"
-  resolved "https://registry.yarnpkg.com/@types/koa/-/koa-2.0.35.tgz#99e116e91ece61a3636e60a57609638b19c4fae3"
-  dependencies:
-    "@types/cookies" "*"
-    "@types/node" "*"
+"@types/joi@*":
+  version "10.3.2"
+  resolved "https://registry.yarnpkg.com/@types/joi/-/joi-10.3.2.tgz#bc4ce6577c294710663d347ebe59087f375075a5"
 
 "@types/lodash@^4.14.34":
   version "4.14.43"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.43.tgz#0373de422e70f5bce12c15340103a3c126c81086"
 
-"@types/mime@*", "@types/mime@0.0.29":
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/@types/mime/-/mime-0.0.29.tgz#fbcfd330573b912ef59eeee14602bface630754b"
+"@types/mime-db@*":
+  version "1.27.0"
+  resolved "https://registry.yarnpkg.com/@types/mime-db/-/mime-db-1.27.0.tgz#9bc014a1fd1fdf47649c1a54c6dd7966b8284792"
 
-"@types/multer@0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@types/multer/-/multer-0.0.32.tgz#f89c751227dc20b7c933c309a3e7467c499fcdec"
+"@types/mimos@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/mimos/-/mimos-3.0.0.tgz#20356e7381e9529c2a7e764c798be5a48cdeff96"
   dependencies:
-    "@types/express" "*"
+    "@types/mime-db" "*"
 
-"@types/node@*", "@types/node@^6.0.38", "@types/node@^6.0.41":
+"@types/node@*", "@types/node@^6.0.38":
   version "6.0.52"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.52.tgz#1ac3a99b42320f9e463482f25af4c2359473aaa6"
+
+"@types/podium@*":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/podium/-/podium-1.0.0.tgz#bfaa2151be2b1d6109cc69f7faa9dac2cba3bb20"
 
 "@types/promises-a-plus@0.0.26":
   version "0.0.26"
@@ -110,12 +74,11 @@
   version "3.6.31"
   resolved "https://registry.yarnpkg.com/@types/redux/-/redux-3.6.31.tgz#40eafa7575db36b912ce0059b85de98c205b0708"
 
-"@types/serve-static@*", "@types/serve-static@^1.7.31":
-  version "1.7.31"
-  resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.7.31.tgz#15456de8d98d6b4cff31be6c6af7492ae63f521a"
+"@types/shot@*":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@types/shot/-/shot-3.4.0.tgz#459477c5187d3ebd303660ab099e7e9e0f3b656f"
   dependencies:
-    "@types/express-serve-static-core" "*"
-    "@types/mime" "*"
+    "@types/node" "*"
 
 "@types/sinon@^1.16.29":
   version "1.16.33"
@@ -234,32 +197,6 @@ apollo-client@^0.5.21:
     "@types/redux" "^3.5.29"
     "@types/sinon" "^1.16.29"
     typed-graphql "1.0.2"
-
-apollo-server@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/apollo-server/-/apollo-server-0.3.3.tgz#3b6876c1d8bf56f51736375fa48f60dccada75a8"
-  dependencies:
-    "@types/body-parser" "0.0.33"
-    "@types/boom" "0.0.32"
-    "@types/chai" "^3.4.34"
-    "@types/connect" "^3.4.30"
-    "@types/cookies" "^0.5.30"
-    "@types/express" "^4.0.33"
-    "@types/express-serve-static-core" "^4.0.36"
-    "@types/fibers" "0.0.29"
-    "@types/hapi" "^13.0.35"
-    "@types/http-errors" "^1.3.29"
-    "@types/koa" "^2.0.33"
-    "@types/koa-bodyparser" "^3.0.19"
-    "@types/koa-router" "^7.0.21"
-    "@types/mime" "0.0.29"
-    "@types/multer" "0.0.32"
-    "@types/node" "^6.0.41"
-    "@types/serve-static" "^1.7.31"
-    boom "^4.0.0"
-    http-errors "^1.5.0"
-    source-map-support "^0.4.2"
-    typed-graphql "^1.0.2"
 
 aproba@^1.0.3:
   version "1.0.4"
@@ -1092,9 +1029,15 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
-boom@4.x.x, boom@^4.0.0:
+boom@4.x.x:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/boom/-/boom-4.2.0.tgz#c1a74174b11fbba223f6162d4fd8851a1b82a536"
+  dependencies:
+    hoek "4.x.x"
+
+boom@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/boom/-/boom-4.3.1.tgz#4f8a3005cb4a7e3889f749030fd25b96e01d2e31"
   dependencies:
     hoek "4.x.x"
 
@@ -2402,6 +2345,27 @@ graphql-anywhere@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/graphql-anywhere/-/graphql-anywhere-1.1.2.tgz#897d2868d35723ce7d8b4ead3455c285ea51a2d2"
 
+graphql-server-core@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/graphql-server-core/-/graphql-server-core-0.7.0.tgz#a658b3b0704f8a19b24254b64bef6b3d0ddce8ba"
+  optionalDependencies:
+    "@types/graphql" "^0.9.0"
+
+graphql-server-hapi@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/graphql-server-hapi/-/graphql-server-hapi-0.7.2.tgz#2fa55b8a000952f125af038404563e72d0ba05ab"
+  dependencies:
+    boom "^4.3.1"
+    graphql-server-core "^0.7.0"
+    graphql-server-module-graphiql "^0.7.2"
+  optionalDependencies:
+    "@types/graphql" "^0.9.0"
+    "@types/hapi" "^16.0.0"
+
+graphql-server-module-graphiql@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/graphql-server-module-graphiql/-/graphql-server-module-graphiql-0.7.2.tgz#aa1f2a26eadbf7127c1b077e633d5086da52b330"
+
 graphql-subscriptions@^0.2.0:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/graphql-subscriptions/-/graphql-subscriptions-0.2.2.tgz#28c8e19d24b31abc6e97f4c9719ea99f890f6192"
@@ -2572,7 +2536,7 @@ htmlparser2@~3.3.0:
     domutils "1.1"
     readable-stream "1.0"
 
-http-errors@^1.5.0, http-errors@~1.5.0:
+http-errors@~1.5.0:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.5.1.tgz#788c0d2c1de2c81b9e6e8c01843b6b97eb920750"
   dependencies:

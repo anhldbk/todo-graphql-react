@@ -1,15 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router';
+import React from "react";
+import { Link } from "react-router";
 
 const NavbarLink = ({ title, href, active = false }) => (
-  <li className={active && 'active'}>
+  <li className={active && "active"}>
     <Link to={href}>
       {title}
-      {active && (
+      {active &&
         <span className="sr-only">
           (current)
-        </span>
-      )}
+        </span>}
     </Link>
   </li>
 );
@@ -17,7 +16,7 @@ const NavbarLink = ({ title, href, active = false }) => (
 NavbarLink.propTypes = {
   title: React.PropTypes.string,
   href: React.PropTypes.string,
-  active: React.PropTypes.bool,
+  active: React.PropTypes.bool
 };
 
 export default NavbarLink;
