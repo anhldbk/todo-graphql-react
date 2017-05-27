@@ -8,8 +8,8 @@ class PostList extends React.Component {
   }
 
   render() {
-    var posts = this.props.posts.map(post => (
-      <div key={post.id} className="list-group-item">
+    var posts = this.props.posts.map( (post, key) => (
+      <div key={key} className="list-group-item">
         <h4 className="list-group-item-heading">{post.title}</h4>
         <p className="list-group-item-text">{post.content}</p>
       </div>

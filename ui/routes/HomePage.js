@@ -43,13 +43,15 @@ class HomePage extends React.Component {
         document: SUBSCRIPTION_QUERY,
         updateQuery: (previousResult, { subscriptionData }) => {
           const newPost = subscriptionData.data.postAdded;
+          console.log('-------------------')
           const newResult = update(previousResult, {
             posts: {
               $unshift: [newPost]
             }
           });
+          console.log(previousResult);
           this._notifyInfo("A new post is found.");
-          return newResult;
+          // return previousResult;
         }
       });
     }
@@ -149,34 +151,6 @@ const SUBMIT_POST_MUTATION = gql`
   }
 `;
 
-const withMutations = graphql(SUBMIT_POST_MUTATION, {
-  props: ({ ownProps, mutate }) => ({
-    submit: ({ title, content }) =>
-      mutate({
-        variables: { title, content },
-        optimisticResponse: {
-          __typename: "Mutation",
-          addPost: {
-            __typename: "Post",
-            id: null,
-            title,
-            content
-          }
-        },
-        updateQueries: {
-          Post: (prev, { mutationResult }) => {
-            const newPost = mutationResult.data.addPost;
-            return update(prev, {
-              posts: {
-                $unshift: [newPost]
-              }
-            });
-          }
-        }
-      })
-  })
-});
-
 const POST_QUERY = gql`
   query {
     posts {
@@ -187,13 +161,45 @@ const POST_QUERY = gql`
     }
   }
 `;
+console.log('Hek')
+const withMutations = graphql(SUBMIT_POST_MUTATION, {
+  props: ({ ownProps, mutate }) => ({
+    submit: ({ title, content }) =>
+      mutate({
+        variables: { title, content },
+        optimisticResponse: {
+          __typename: "Mutation",
+          addPost: {
+            __typename: "Post",
+            id: -1,
+            title: title + 'xxxxxxxxxxxx',
+            content
+          }
+        },
+        update: (proxy, { data }) => {
+          const query = POST_QUERY;
+          console.log(proxy);
+          const acc = proxy.readQuery({ query });
+          console.log(acc)
+          acc.posts.push(data.addPost);
+          proxy.writeQuery({ query, data: acc });
+        },
+      })
+  })
+});
+
+
 
 const withData = graphql(POST_QUERY, {
-  props: ({ data: { loading, posts, subscribeToMore } }) => ({
-    loading,
-    posts,
-    subscribeToMore
-  })
+  props: ({ data }) => {
+    console.log(data);
+    const { loading, posts, subscribeToMore } = data;
+    return {
+      loading,
+      posts,
+      subscribeToMore
+    };
+  }
 });
 
 export default withData(withMutations(HomePage));
