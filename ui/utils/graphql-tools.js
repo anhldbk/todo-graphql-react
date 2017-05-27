@@ -90,72 +90,67 @@ export function withQuery(queryString, propName = undefined) {
 
 /**
  * High-order function for GraphQL mutation queries
- * @param  {String} queryString GraphQL query string. The associated GraphQL
- *   operation's name will be extracted from the string and mapped into `props` as
- *   a function
- * @param  {Function} mapFn A mapping function of `(data) => props`. Results will be mapped to `props` of enhanced components
+ * @param  {String} mutationString GraphQL mutation query string.
+ *   The associated GraphQL operation's name will be extracted
+ *   from the string and mapped into `props` as a function
+ * @param  {Function} mapFn A mapping function of `(data) => props`.
+ *   Results will be mapped to `props` of enhanced components
  * @param  {String} mapType  GraphQL type of the result returned by the mapping function.
  * @param  {[type]} [optimisticResponse=undefined] [description]
  * @return {[type]}                                [description]
  */
-export function withMutation(
-  queryString,
-  mapType,
-  mapFn,
-  optimisticResponse = undefined
-) {
-  if (
-    !_.isString(queryString) ||
-    !_.isString(mapType) ||
-    !_.isFunction(mapFn)
-  ) {
-    throw new Error("Invalid params");
-  }
+ export function withMutation(
+   mutationString,
+   mapType,
+   mapFn,
+   optimisticResponse = undefined
+ ) {
+   if (
+     !_.isString(mutationString) ||
+     !_.isString(mapType) ||
+     !_.isFunction(mapFn)
+   ) {
+     throw new Error("Invalid params");
+   }
 
-  const opName = getOperationName(queryString);
-  if (_.isNil(queryString)) {
-    throw new Error("Invalid query string");
-  }
-  if (!_.isObject(optimisticResponse)) {
-    throw new Error("Invalid optimistic response. Must be an object");
-  }
+   const opName = getOperationName(mutationString);
+   if (_.isNil(mutationString)) {
+     throw new Error("Invalid query string");
+   }
+   if (!_.isObject(optimisticResponse)) {
+     throw new Error("Invalid optimistic response. Must be an object");
+   }
 
-  return graphql(gql(queryString), {
-    props: ({ ownProps, mutate }) => {
-      let result = {
-        [opName]: object =>
-          mutate({
-            variables: { ...object },
-            update: (proxy, { data }) => {
-              const query = POST_QUERY;
-              console.log(proxy);
-              const acc = proxy.readQuery({ query });
-              console.log(acc);
-              acc.posts.push(data.addPost);
-              proxy.writeQuery({ query, data: acc });
-            },
-            updateQueries: {
-              [mapType]: (prev, { mutationResult }) => {
-                const { data } = mutationResult;
-                return mapFn(prev, data[opName]);
-              }
-            }
-          })
-      };
+   return graphql(gql(mutationString), {
+     props: ({ ownProps, mutate }) => {
+       let result = {
+         [opName]: object =>
+           mutate({
+             variables: { ...object },
+             update: (proxy, { data }) => {
+               const query = POST_QUERY;
+               console.log(proxy);
+               const acc = proxy.readQuery({ query });
+               console.log(acc);
+               acc.posts.push(data.addPost);
+               proxy.writeQuery({ query, data: acc });
+             }
+           })
+       };
 
-      if (!optimisticResponse) {
-        result = {
-          ...result,
-          optimisticResponse: {
-            __typename: "Mutation",
-            [opName]: {
-              __typename: mapType,
-              ...optimisticResponse
-            }
-          }
-        };
-      }
-      return result;
-    }
-  });
-}
+       if (!optimisticResponse) {
+         result = {
+           ...result,
+           optimisticResponse: {
+             __typename: "Mutation",
+             [opName]: {
+               __typename: mapType,
+               ...optimisticResponse
+             }
+           }
+         };
+       }
+       return result;
+     }
+   });
+ }

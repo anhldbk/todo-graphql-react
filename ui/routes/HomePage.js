@@ -43,15 +43,13 @@ class HomePage extends React.Component {
         document: SUBSCRIPTION_QUERY,
         updateQuery: (previousResult, { subscriptionData }) => {
           const newPost = subscriptionData.data.postAdded;
-          console.log('-------------------')
           const newResult = update(previousResult, {
             posts: {
               $unshift: [newPost]
             }
           });
-          console.log(previousResult);
           this._notifyInfo("A new post is found.");
-          // return previousResult;
+          return newResult;
         }
       });
     }
@@ -66,20 +64,31 @@ class HomePage extends React.Component {
     if (!this.state.canSubmit) {
       this._notifyError("Can NOT submit");
     }
+    const submittable = () => {
+      this.setState({
+        canSubmit: true
+      });
+    };
 
     this.setState({ canSubmit: false });
-    submit({ title, content }).then(res => {
-      this.setState({ canSubmit: true });
+    submit({ title, content })
+      .then(res => {
+        this.setState({ canSubmit: true });
 
-      if (res.errors) {
-        this._notifyError("Failed to post");
-        return this.setState({ errors: res.errors });
-      }
-
-      this.inputTitle.value = "";
-      this.inputContent.value = "";
-      this._notifySuccess("Post is created");
-    });
+        if (res.errors) {
+          this._notifyError("Failed to post");
+          // return this.setState({ errors: res.errors });
+        } else {
+          this.inputTitle.value = "";
+          this.inputContent.value = "";
+          this._notifySuccess("Post is created");
+        }
+        submittable();
+      })
+      .catch(err => {
+        this._notifyError(err.message);
+        submittable();
+      });
   }
 
   @autobind _addNotification(message, level = "success") {
@@ -161,7 +170,7 @@ const POST_QUERY = gql`
     }
   }
 `;
-console.log('Hek')
+console.log("Hek");
 const withMutations = graphql(SUBMIT_POST_MUTATION, {
   props: ({ ownProps, mutate }) => ({
     submit: ({ title, content }) =>
@@ -172,27 +181,23 @@ const withMutations = graphql(SUBMIT_POST_MUTATION, {
           addPost: {
             __typename: "Post",
             id: -1,
-            title: title + 'xxxxxxxxxxxx',
+            title: title + "xxxxxxxxxxxx",
             content
           }
         },
         update: (proxy, { data }) => {
+          console.log("-------------> Data", data);
           const query = POST_QUERY;
-          console.log(proxy);
           const acc = proxy.readQuery({ query });
-          console.log(acc)
           acc.posts.push(data.addPost);
           proxy.writeQuery({ query, data: acc });
-        },
+        }
       })
   })
 });
 
-
-
 const withData = graphql(POST_QUERY, {
   props: ({ data }) => {
-    console.log(data);
     const { loading, posts, subscribeToMore } = data;
     return {
       loading,

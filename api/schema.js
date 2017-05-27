@@ -12,17 +12,21 @@ const rootSchema = [
     title: String!
     content: String!
   }
+
   type Query {
     # List all posts
     posts: [Post]
   }
+
   type Mutation {
     addPost(title: String!, content: String!): Post
   }
+
   type Subscription {
     # Subscription fires on every comment added
     postAdded: Post
   }
+
   schema {
     query: Query
     mutation: Mutation
@@ -39,6 +43,9 @@ const rootResolvers = {
   },
   Mutation: {
     addPost(root, { title, content }, context) {
+      if ( title == "xxx" ) {
+        throw new Error(`Couldn't create the post with title = ${title}`);
+      }
       var post = db.add(title, content);
       pubsub.publish("postAdded", post);
       return post;
