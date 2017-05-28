@@ -36,8 +36,6 @@ const rootSchema = [
 `
 ];
 
-
-
 const rootResolvers = {
   Query: {
     posts(root, args, context) {
@@ -46,7 +44,7 @@ const rootResolvers = {
   },
   Mutation: {
     addPost(root, { title, content }, context) {
-      if ( title == "xxx" ) {
+      if (title == "xxx") {
         throw new Error(`Couldn't create the post with title = ${title}`);
       }
       var post = db.add(title, content);

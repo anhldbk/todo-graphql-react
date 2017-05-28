@@ -1,4 +1,3 @@
-import { createServer } from "http";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { SubscriptionManager } from "graphql-subscriptions";
 import { schema, pubsub } from "./schema";
@@ -9,17 +8,7 @@ const subscriptionManager = new SubscriptionManager({
 });
 
 export default {
-  // Start WebSocket server for GraphQL subscriptions
-  start: function(port) {
-    const websocketServer = createServer((request, response) => {
-      response.writeHead(404);
-      response.end();
-    });
-
-    websocketServer.listen(port, () =>
-      console.log(`Websocket Server is now running on http://localhost:${port}`)
-    );
-
+  activate: function(hapiServer){
     new SubscriptionServer(
       {
         subscriptionManager,
@@ -34,7 +23,7 @@ export default {
           });
         }
       },
-      websocketServer
+      hapiServer.listener
     );
   }
 };
