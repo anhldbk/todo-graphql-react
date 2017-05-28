@@ -1,10 +1,10 @@
 import React from "react";
-import { graphql, compose } from 'react-apollo';
+import { graphql, compose } from "react-apollo";
 import update from "react-addons-update";
 import NotificationSystem from "react-notification-system";
 import { autobind } from "core-decorators";
 import PostList from "../components/PostList";
-import { withQuery, withMutation } from "../utils/graphql-tools";
+import { withQuery, withMutation } from "../utils/graphqlize";
 
 const SUBSCRIPTION_QUERY = `subscription {
     postAdded{
@@ -49,16 +49,14 @@ class HomePage extends React.Component {
         //   If you add posts in 2 separated tabs, to keep the 2 post lists in sync,
         //   it's better to deal with subscriptions
         //
-        // Solution? Remove `update`!
+        // Solution? Remove `addPost.update`!
 
-        // const next = update(prev, {
-        //   posts: {
-        //     $unshift: [data]
-        //   }
-        // });
-        // return next;
-        console.log('---------------------?');
-        console.log(prev);
+        const next = update(prev, {
+          posts: {
+            $unshift: [data]
+          }
+        });
+        return next;
       });
     }
   }
@@ -81,7 +79,7 @@ class HomePage extends React.Component {
     this.setState({ canSubmit: false });
     const optimistic = {
       response: { title: `[Posting] ${title}`, content, id: -1 },
-      type: 'Post'
+      type: "Post"
     };
     addPost({ title, content }, optimistic)
       .then(success => {
@@ -115,21 +113,9 @@ class HomePage extends React.Component {
     this._addNotification(message, "info");
   }
 
-  // shouldComponentUpdate(nextProps, nextState){
-  //   // console.log('Considering....');
-  //   // console.log('-----------------------')
-  //   // console.log(this.props.posts.data[0] === nextProps.posts.data[0]);
-  //   // console.log('-----------------------')
-  //   // console.log(nextProps.posts.data[0]);
-  //   // console.log('-----------------------')
-  //   // console.log(this.props.posts.data[0]);
-  //   // console.log(this.getObjectDiff(this.props, nextProps));
-  //   return false;
-  // }
-
   render() {
     const { loading, posts: { data } } = this.props;
-    console.log('> Homepage is being rendered with loading =', loading);
+    console.log("> Homepage is being rendered with loading =", loading);
 
     if (loading) {
       return <div>Loading...</div>;
@@ -191,17 +177,17 @@ const QUERY_POSTS = `
 
 const withPosts = withQuery(QUERY_POSTS);
 
-const withAddPost = withMutation(MUTATION_ADD_POST, {
-  update: {
-    map: (current, data) => {
-      current.push(data);
-      return current;
-    },
-    queryString: QUERY_POSTS
+const withAddPost = withMutation(
+  MUTATION_ADD_POST,
+  {
+    // update: {
+    //   map: (current, data) => {
+    //     current.push(data);
+    //     return current;
+    //   },
+    //   queryString: QUERY_POSTS
+    // }
   }
-});
+);
 
-export default compose(
-  withPosts,
-  withAddPost
-)(HomePage);
+export default compose(withPosts, withAddPost)(HomePage);
