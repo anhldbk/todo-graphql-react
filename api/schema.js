@@ -3,6 +3,7 @@ import { PubSub } from "graphql-subscriptions";
 import db from "./db";
 import _ from "lodash";
 
+
 const pubsub = new PubSub();
 
 const rootSchema = [
@@ -43,11 +44,13 @@ const rootResolvers = {
   },
   Mutation: {
     addPost(root, { title, content }, context) {
-      if ( title == "xxx" ) {
+      if (title == "xxx") {
         throw new Error(`Couldn't create the post with title = ${title}`);
       }
       var post = db.add(title, content);
-      pubsub.publish("postAdded", post);
+      setTimeout(() => {
+        pubsub.publish("postAdded", post);
+      }, 1000);
       return post;
     }
   },

@@ -1,8 +1,6 @@
-const a = 'biz';
-const b = 'data';
+const _ = require('lodash');
+const a= unde;
+const b= undefined;
 
-const c = {
-  [a || b] : 'love'
-};
-
-console.log(c);
+console.log( _.isNil( a ));
+console.log( _.isNil( a && b));

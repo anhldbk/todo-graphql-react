@@ -2,6 +2,7 @@ import { graphql } from "react-apollo";
 import gql from "graphql-tag";
 import _ from "lodash";
 
+const _gqlMap = {};
 /**
  * Get the name of the first operation in `query` or `mutation` graphql strings
  * @param  {String} queryString GraphQL query string
@@ -33,6 +34,29 @@ function getOperationName(queryString) {
   return queryString.substr(begin, end - begin + 1).trim();
 }
 
+function getHash(string) {
+  if (!_.isString(string)) {
+    throw new Error("Invalid param. Must be a string.");
+  }
+  return string.split("").reduce(function(a, b) {
+    a = (a << 5) - a + b.charCodeAt(0);
+    return a & a;
+  }, 0);
+}
+
+/**
+ * Get parsed GraphQL queries efficiently by caching parsed ones.
+ * @param  {String} gqlString  A GraphQL string
+ * @return {Object}  A parsed GraphQL query
+ */
+function getQuery(gqlString) {
+  const hash = getHash(gqlString);
+  if (!_.has(_gqlMap, hash)) {
+    _.set(_gqlMap, hash, gql`${gqlString}`);
+  }
+  return _.get(_gqlMap, hash);
+}
+
 function getSubscribe(subscribeFn) {
   return (queryString, mapFn) => {
     if (!_.isString(queryString) || !_.isFunction(mapFn)) {
@@ -44,7 +68,7 @@ function getSubscribe(subscribeFn) {
     }
 
     return subscribeFn({
-      document: gql(queryString),
+      document: getQuery(queryString),
 
       updateQuery: (previousResult, { subscriptionData }) => {
         const { data } = subscriptionData;
@@ -63,7 +87,7 @@ function getSubscribe(subscribeFn) {
  * @return {Function} The associated high-order function
  */
 export function withQuery(queryString, propName = undefined) {
-  if (!_.isString(queryString) || !_.isFunction(mapFn)) {
+  if (!_.isString(queryString)) {
     throw new Error("Invalid params");
   }
 
@@ -72,7 +96,7 @@ export function withQuery(queryString, propName = undefined) {
     throw new Error("Invalid query string");
   }
 
-  return graphql(gql(query), {
+  return graphql(getQuery(queryString), {
     props: ({ data }) => {
       const { loading, subscribeToMore } = data;
       const subscribe = getSubscribe(subscribeToMore);
@@ -93,64 +117,72 @@ export function withQuery(queryString, propName = undefined) {
  * @param  {String} mutationString GraphQL mutation query string.
  *   The associated GraphQL operation's name will be extracted
  *   from the string and mapped into `props` as a function
- * @param  {Function} mapFn A mapping function of `(data) => props`.
- *   Results will be mapped to `props` of enhanced components
- * @param  {String} mapType  GraphQL type of the result returned by the mapping function.
- * @param  {[type]} [optimisticResponse=undefined] [description]
- * @return {[type]}                                [description]
+ * @param  {Object} options  Options for optimistically/normally updates.
+ * @return {Function} The associated high-order function
  */
- export function withMutation(
-   mutationString,
-   mapType,
-   mapFn,
-   optimisticResponse = undefined
- ) {
-   if (
-     !_.isString(mutationString) ||
-     !_.isString(mapType) ||
-     !_.isFunction(mapFn)
-   ) {
-     throw new Error("Invalid params");
-   }
+export function withMutation(mutationString, options = undefined) {
+  const emptyOptions = {
+    update: {}
+  };
+  const { update: { map, queryString } } = _.merge(options || {}, emptyOptions);
 
-   const opName = getOperationName(mutationString);
-   if (_.isNil(mutationString)) {
-     throw new Error("Invalid query string");
-   }
-   if (!_.isObject(optimisticResponse)) {
-     throw new Error("Invalid optimistic response. Must be an object");
-   }
+  if (_.isNil(map || queryString) && (map != queryString)) {
+    throw new Error(
+      "To update after mutations, you must set both fields `map` & `queryString` in `options.update`"
+    );
+  }
 
-   return graphql(gql(mutationString), {
-     props: ({ ownProps, mutate }) => {
-       let result = {
-         [opName]: object =>
-           mutate({
-             variables: { ...object },
-             update: (proxy, { data }) => {
-               const query = POST_QUERY;
-               console.log(proxy);
-               const acc = proxy.readQuery({ query });
-               console.log(acc);
-               acc.posts.push(data.addPost);
-               proxy.writeQuery({ query, data: acc });
-             }
-           })
-       };
+  const opMutation = getOperationName(mutationString);
+  if (_.isNil(opMutation)) {
+    throw new Error("Invalid mutation query string");
+  }
 
-       if (!optimisticResponse) {
-         result = {
-           ...result,
-           optimisticResponse: {
-             __typename: "Mutation",
-             [opName]: {
-               __typename: mapType,
-               ...optimisticResponse
-             }
-           }
-         };
-       }
-       return result;
-     }
-   });
- }
+  const update = (proxy, { data }) => {
+    if (_.isNil(map && queryString)) {
+      return; // do nothing to update
+    }
+    const query = getQuery(queryString);
+    const opQuery = getOperationName(queryString);
+    if (_.isNil(opQuery)) {
+      throw new Error("Invalid query string");
+    }
+
+    const current = proxy.readQuery({ query });
+    const next = map(_.get(current, opQuery), _.get(data, opMutation));
+
+    if (_.isNil(next)) {
+      return; // nothing to update
+    }
+    _.set(current, opQuery, next);
+    proxy.writeQuery({ query, data: current });
+  };
+
+  const invalid = (response, type) => {
+    if (_.isNil(response && type) && (response != type)) {
+      console.warn(
+        "To use optimistic responses, you must set both fields `response` & `type``"
+      );
+      return true;
+    }
+    return  !(_.isObject(response) && _.isString(type)) ;
+  };
+
+  return graphql(getQuery(mutationString), {
+    props: ({ ownProps, mutate }) => ({
+      [opMutation]: (variables, { response, type } = {}) =>
+        mutate({
+          variables,
+          optimisticResponse: invalid(response, type)
+            ? undefined
+            : {
+                __typename: "Mutation",
+                [opMutation]: {
+                  __typename: type,
+                  ...response,
+                }
+              },
+          update
+        })
+    })
+  });
+}
