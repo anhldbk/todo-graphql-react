@@ -4,19 +4,17 @@ import { Router, browserHistory } from "react-router";
 import { createNetworkInterface } from "apollo-client";
 import { ApolloProvider } from "react-apollo";
 import { Client } from "subscriptions-transport-ws";
+import "isomorphic-fetch";
 import * as ReactGA from "react-ga";
 
-// Polyfill fetch
-import "isomorphic-fetch";
-
-import "./style/index.css";
-
+import { SUBSCRIPTION_ENDPOINT } from '../config'
 import routes from "./routes";
+import "./style/index.css";
 import createApolloClient from "./helpers/create-apollo-client";
 import addGraphQLSubscriptions from "./helpers/subscriptions";
 
-const WS_PORT = 8081;
-const wsClient = new Client(`ws://localhost:${WS_PORT}`);
+
+const wsClient = new Client(SUBSCRIPTION_ENDPOINT);
 const networkInterface = createNetworkInterface({
   uri: "/graphql",
   opts: {

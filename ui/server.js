@@ -11,15 +11,10 @@ import proxy from 'http-proxy-middleware';
 import routes from './routes';
 import Html from './routes/Html';
 import createApolloClient from './helpers/create-apollo-client';
-
-const BASE_PORT = process.env.PORT || 3000;
-const API_PORT = process.env.API_PORT | 8080
-const API_HOST = `http://localhost:${API_PORT}`;
-const API_URL = `${API_HOST}/graphql`;
+import { BASE_PORT, API_HOST, API_ENDPOINT}  from '../config';
 
 const app = new Express();
 app.use(Express.static(path.join(process.cwd(), 'static')));
-
 const apiProxy = proxy({target: API_HOST});
 app.use('/graphql', apiProxy);
 app.use('/graphiql', apiProxy);
@@ -40,7 +35,7 @@ app.use((req, res) => {
       const client = createApolloClient({
         ssrMode: true,
         networkInterface: createNetworkInterface({
-          uri: API_URL,
+          uri: API_ENDPOINT,
           opts: {
             credentials: 'same-origin',
             // transfer request headers to networkInterface so that they're
