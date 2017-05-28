@@ -1,12 +1,12 @@
 import React from "react";
-import { graphql } from "react-apollo";
-import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
 import update from "react-addons-update";
 import NotificationSystem from "react-notification-system";
 import { autobind } from "core-decorators";
 import PostList from "../components/PostList";
+import { withQuery, withMutation } from "../utils/graphqlize";
 
-const SUBSCRIPTION_QUERY = gql`subscription {
+const SUBSCRIPTION_QUERY = `subscription {
     postAdded{
       id
       title
@@ -39,45 +39,59 @@ class HomePage extends React.Component {
     // we don't resubscribe on changed props, because it never happens in our app
     // see more at: https://github.com/apollostack/GitHunt-React/blob/master/ui/routes/CommentsPage.js#L48
     if (!this.subscription && !nextProps.loading) {
-      this.subscription = this.props.subscribeToMore({
-        document: SUBSCRIPTION_QUERY,
-        updateQuery: (previousResult, { subscriptionData }) => {
-          const newPost = subscriptionData.data.postAdded;
-          const newResult = update(previousResult, {
-            posts: {
-              $unshift: [newPost]
-            }
-          });
-          this._notifyInfo("A new post is found.");
-          return newResult;
-        }
+      const { subscribe } = this.props.posts;
+      this.subscription = subscribe(SUBSCRIPTION_QUERY, (prev, data) => {
+        this._notifyInfo("A new post is found.");
+        // If you want to update with subscribed data, do it here
+        // It will lead to duplicated data. Because:
+        // - `addPost` is defined `update` (see `withAddPost`) to update `posts` based on returned results.
+        // - This subscription event will be fired whenever a new post's addded
+        //   If you add posts in 2 separated tabs, to keep the 2 post lists in sync,
+        //   it's better to deal with subscriptions
+        //
+        // Solution? Remove `addPost.update`!
+
+        const next = update(prev, {
+          posts: {
+            $unshift: [data]
+          }
+        });
+        return next;
       });
     }
   }
 
   @autobind submitForm(event) {
     event.preventDefault();
-    const { submit } = this.props;
+    const { addPost } = this.props;
     const title = this.inputTitle.value;
     const content = this.inputContent.value;
 
     if (!this.state.canSubmit) {
       this._notifyError("Can NOT submit");
     }
+    const submittable = () => {
+      this.setState({
+        canSubmit: true
+      });
+    };
 
     this.setState({ canSubmit: false });
-    submit({ title, content }).then(res => {
-      this.setState({ canSubmit: true });
-
-      if (res.errors) {
-        this._notifyError("Failed to post");
-        return this.setState({ errors: res.errors });
-      }
-
-      this.inputTitle.value = "";
-      this.inputContent.value = "";
-      this._notifySuccess("Post is created");
-    });
+    const optimistic = {
+      response: { title: `[Posting] ${title}`, content, id: -1 },
+      type: "Post"
+    };
+    addPost({ title, content }, optimistic)
+      .then(success => {
+        this.inputTitle.value = "";
+        this.inputContent.value = "";
+        this._notifySuccess("Post is created");
+        submittable();
+      })
+      .catch(err => {
+        this._notifyError(err.message);
+        submittable();
+      });
   }
 
   @autobind _addNotification(message, level = "success") {
@@ -100,7 +114,8 @@ class HomePage extends React.Component {
   }
 
   render() {
-    const { loading, posts } = this.props;
+    const { loading, posts: { data } } = this.props;
+    console.log("> Homepage is being rendered with loading =", loading);
 
     if (loading) {
       return <div>Loading...</div>;
@@ -133,13 +148,13 @@ class HomePage extends React.Component {
           </form>
         </div>
         <NotificationSystem ref="notificationSystem" />
-        <PostList posts={posts} />
+        <PostList posts={data} />
       </div>
     );
   }
 }
 
-const SUBMIT_POST_MUTATION = gql`
+const MUTATION_ADD_POST = `
   mutation addPost($title: String!, $content: String!) {
     addPost(title: $title, content: $content) {
       id
@@ -149,35 +164,7 @@ const SUBMIT_POST_MUTATION = gql`
   }
 `;
 
-const withMutations = graphql(SUBMIT_POST_MUTATION, {
-  props: ({ ownProps, mutate }) => ({
-    submit: ({ title, content }) =>
-      mutate({
-        variables: { title, content },
-        optimisticResponse: {
-          __typename: "Mutation",
-          addPost: {
-            __typename: "Post",
-            id: null,
-            title,
-            content
-          }
-        },
-        updateQueries: {
-          Post: (prev, { mutationResult }) => {
-            const newPost = mutationResult.data.addPost;
-            return update(prev, {
-              posts: {
-                $unshift: [newPost]
-              }
-            });
-          }
-        }
-      })
-  })
-});
-
-const POST_QUERY = gql`
+const QUERY_POSTS = `
   query {
     posts {
       # TODO: define a fragment here
@@ -188,12 +175,19 @@ const POST_QUERY = gql`
   }
 `;
 
-const withData = graphql(POST_QUERY, {
-  props: ({ data: { loading, posts, subscribeToMore } }) => ({
-    loading,
-    posts,
-    subscribeToMore
-  })
-});
+const withPosts = withQuery(QUERY_POSTS);
 
-export default withData(withMutations(HomePage));
+const withAddPost = withMutation(
+  MUTATION_ADD_POST,
+  {
+    // update: {
+    //   map: (current, data) => {
+    //     current.push(data);
+    //     return current;
+    //   },
+    //   queryString: QUERY_POSTS
+    // }
+  }
+);
+
+export default compose(withPosts, withAddPost)(HomePage);

@@ -2,9 +2,10 @@ import { makeExecutableSchema } from "graphql-tools";
 import { PubSub } from "graphql-subscriptions";
 import db from "./db";
 import _ from "lodash";
+import EventEmitter from "events";
 
 const pubsub = new PubSub();
-
+const emitter = new EventEmitter();
 const rootSchema = [
   `
   type Post {
@@ -12,17 +13,21 @@ const rootSchema = [
     title: String!
     content: String!
   }
+
   type Query {
     # List all posts
     posts: [Post]
   }
+
   type Mutation {
     addPost(title: String!, content: String!): Post
   }
+
   type Subscription {
     # Subscription fires on every comment added
     postAdded: Post
   }
+
   schema {
     query: Query
     mutation: Mutation
@@ -30,6 +35,8 @@ const rootSchema = [
   }
 `
 ];
+
+
 
 const rootResolvers = {
   Query: {
@@ -39,6 +46,9 @@ const rootResolvers = {
   },
   Mutation: {
     addPost(root, { title, content }, context) {
+      if ( title == "xxx" ) {
+        throw new Error(`Couldn't create the post with title = ${title}`);
+      }
       var post = db.add(title, content);
       pubsub.publish("postAdded", post);
       return post;
