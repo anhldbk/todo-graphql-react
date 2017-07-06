@@ -7,65 +7,73 @@ import Good from "good";
 import { API_PORT } from "../config";
 
 const server = new hapi.Server();
-server.connection({ host: "localhost", port: API_PORT });
-
-server.register({
-  register: graphqlHapi,
-  options: {
-    path: "/graphql",
-    graphqlOptions: () => ({ pretty: true, schema }),
-    route: {
-      cors: true
-    }
-  }
+server.connection({
+    host: "localhost",
+    port: API_PORT,
+    routes: { cors: true }
 });
 
 server.register({
-  register: graphiqlHapi,
-  options: {
-    path: "/graphiql",
-    graphiqlOptions: {
-      endpointURL: "/graphql"
-    }
-  }
-});
-
-server.register(
-  {
-    register: Good,
+    register: graphqlHapi,
     options: {
-      reporters: {
-        console: [
-          {
-            module: "good-squeeze",
-            name: "Squeeze",
-            args: [
-              {
-                response: "*",
-                log: "*"
-              }
-            ]
-          },
-          {
-            module: "good-console"
-          },
-          "stdout"
-        ]
-      }
+        path: "/graphql",
+        graphqlOptions: () => ({ pretty: true, schema }),
+        route: {
+            cors: true
+        }
     }
-  },
-  err => {
-    if (err) {
-      throw err; // something bad happened loading the plugin
-    }
+});
 
-    server.start(err => {
-      if (err) {
-        throw err;
-      }
-      server.log("info", "Server running at: " + server.info.uri);
-    });
-  }
+server.route({
+    method: "OPTIONS",
+    path: "/graphql",
+    handler: (request, reply) => {
+        reply({ ok: true }).header("Access-Control-Allow-Methods", "POST");
+    }
+});
+
+server.register({
+    register: graphiqlHapi,
+    options: {
+        path: "/graphiql",
+        graphiqlOptions: {
+            endpointURL: "/graphql"
+        }
+    }
+});
+
+server.register({
+        register: Good,
+        options: {
+            reporters: {
+                console: [{
+                        module: "good-squeeze",
+                        name: "Squeeze",
+                        args: [{
+                            response: "*",
+                            log: "*"
+                        }]
+                    },
+                    {
+                        module: "good-console"
+                    },
+                    "stdout"
+                ]
+            }
+        }
+    },
+    err => {
+        if (err) {
+            throw err; // something bad happened loading the plugin
+        }
+
+        server.start(err => {
+            if (err) {
+                throw err;
+            }
+            server.log("info", "Server running at: " + server.info.uri);
+        });
+    }
 );
 
 wsServer.activate(server);

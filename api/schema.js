@@ -6,8 +6,10 @@ import EventEmitter from "events";
 
 const pubsub = new PubSub();
 const emitter = new EventEmitter();
+const POST_ADDED = "post_added";
+
 const rootSchema = [
-  `
+    `
   type Post {
     id: Int!
     title: String!
@@ -37,39 +39,38 @@ const rootSchema = [
 ];
 
 const rootResolvers = {
-  Query: {
-    posts(root, args, context) {
-      return db.get();
+    Query: {
+        posts(root, args, context) {
+            return db.get();
+        }
+    },
+    Mutation: {
+        addPost(root, { title, content }, context) {
+            if (title == "xxx") {
+                throw new Error(`Couldn't create the post with title = ${title}`);
+            }
+            var post = db.add(title, content);
+            pubsub.publish("postAdded", post);
+            return post;
+        }
+    },
+    Subscription: {
+        postAdded: {
+            subscribe: () => pubsub.asyncIterator(POST_ADDED)
+        }
     }
-  },
-  Mutation: {
-    addPost(root, { title, content }, context) {
-      if (title == "xxx") {
-        throw new Error(`Couldn't create the post with title = ${title}`);
-      }
-      var post = db.add(title, content);
-      pubsub.publish("postAdded", post);
-      return post;
-    }
-  },
-  Subscription: {
-    // TODO: Parameter?
-    postAdded(post) {
-      // the subscription payload is the comment.
-      return post;
-    }
-  }
+
 };
 
 const schema = [...rootSchema];
 const resolvers = _.merge(rootResolvers);
 
 const executableSchema = makeExecutableSchema({
-  typeDefs: schema,
-  resolvers
+    typeDefs: schema,
+    resolvers
 });
 
 module.exports = {
-  schema: executableSchema,
-  pubsub
+    schema: executableSchema,
+    pubsub
 };

@@ -1,22 +1,29 @@
 import React from "react";
 import { render } from "react-dom";
 import { Router, browserHistory } from "react-router";
-import { createNetworkInterface } from "apollo-client";
+import ApolloClient, { createNetworkInterface } from "apollo-client";
 import { ApolloProvider } from "react-apollo";
 import { Client } from "subscriptions-transport-ws";
 import "isomorphic-fetch";
 import * as ReactGA from "react-ga";
-
-import { SUBSCRIPTION_ENDPOINT } from '../config'
+import {
+  SubscriptionClient,
+  addGraphQLSubscriptions
+} from "subscriptions-transport-ws";
+import { SUBSCRIPTION_ENDPOINT, API_ENDPOINT, API_HOST } from "../config";
 import routes from "./routes";
 import "./style/index.css";
-import createApolloClient from "./helpers/create-apollo-client";
-import addGraphQLSubscriptions from "./helpers/subscriptions";
 
+// Create WebSocket client
+const wsClient = new SubscriptionClient(SUBSCRIPTION_ENDPOINT, {
+  reconnect: true,
+  connectionParams: {
+    // Pass any arguments you want for initialization
+  }
+});
 
-const wsClient = new Client(SUBSCRIPTION_ENDPOINT);
 const networkInterface = createNetworkInterface({
-  uri: "/graphql",
+  uri: API_HOST,
   opts: {
     credentials: "same-origin"
   },
@@ -35,8 +42,7 @@ function logPageView() {
   // ReactGA.set({page: window.location.pathname});
   // ReactGA.pageview(window.location.pathname);
 }
-
-const client = createApolloClient({
+const client = new ApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
   initialState: window.__APOLLO_STATE__, // eslint-disable-line no-underscore-dangle
   ssrForceFetchDelay: 100
